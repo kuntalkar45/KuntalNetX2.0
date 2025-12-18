@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KuntalNetX • Internet Speed Test</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg1: #020617;
+      --bg2: #000814;
+      --accent: #22d3ee;
+      --accent2: #38bdf8;
+      --danger: #f87171;
+      --ok: #4ade80;
+      --text: #e5e7eb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, var(--bg1), var(--bg2));
+      font-family: 'Orbitron', system-ui, sans-serif;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 900px;
+      padding: 24px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .theme-toggle {
+      cursor: pointer;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.05);
+      transition: 0.3s;
+    }
+    .theme-toggle:hover { background: rgba(255,255,255,0.12); }
+
+    /* SPEEDOMETER */
+    .meter-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 30px 0 20px;
+    }
+
+    .meter {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: conic-gradient(
+        var(--accent) 0deg,
+        var(--accent2) 120deg,
+        rgba(255,255,255,0.1) 120deg 360deg
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 40px rgba(34,211,238,0.35);
+      animation: glow 3s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 0 25px rgba(34,211,238,0.25); }
+      to   { box-shadow: 0 0 55px rgba(34,211,238,0.6); }
+    }
+
+    .meter::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 50%;
+      background: #020617;
+    }
+
+    .needle {
+      position: absolute;
+      width: 4px;
+      height: 130px;
+      background: linear-gradient(var(--accent), white);
+      top: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      transform: translate(-50%, -100%) rotate(-130deg);
+      transition: transform 0.6s ease-out;
+      border-radius: 2px;
+    }
+
+    .center {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .speed-text {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .speed-text .value {
+      font-size: 2.6rem;
+      font-weight: 600;
+    }
+
+    .speed-text span {
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+
+    /* INFO CARDS */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      backdrop-filter: blur(6px);
+      transition: 0.3s;
+    }
+
+    .card:hover { transform: translateY(-4px); }
+
+    .card h3 {
+      margin: 0;
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    .card p {
+      margin: 10px 0 0;
+      font-size: 1.4rem;
+    }
+
+    /* BUTTON */
+    .actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 28px;
+    }
+
+    button {
+      font-family: inherit;
+      padding: 14px 34px;
+      font-size: 1rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      color: #020617;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 20px rgba(34,211,238,0.5);
+      transition: 0.3s;
+    }
+
+    button:hover { transform: scale(1.05); }
+
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 0.75rem;
+      opacity: 0.5;
+    }
+
+    /* LIGHT THEME */
+    body.light {
+      background: radial-gradient(circle at top, #e0f2fe, #f8fafc);
+      color: #020617;
+    }
+    body.light .meter::before { background: #f8fafc; }
+    body.light .card { background: rgba(255,255,255,0.8); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>KuntalNetX</h1>
+      <div class="theme-toggle" onclick="toggleTheme()">🌗 Theme</div>
+    </header>
+
+    <div class="meter-wrap">
+      <div class="meter">
+        <div class="needle" id="needle"></div>
+        <div class="center"></div>
+        <div class="speed-text">
+          <div class="value" id="speed">0</div>
+          <span>Mbps</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card"><h3>DOWNLOAD</h3><p id="down">0 Mbps</p></div>
+      <div class="card"><h3>UPLOAD</h3><p id="up">0 Mbps</p></div>
+      <div class="card"><h3>PING</h3><p id="ping">0 ms</p></div>
+      <div class="card"><h3>JITTER</h3><p id="jitter">0 ms</p></div>
+    </div>
+
+    <div class="actions">
+      <button onclick="startTest()">START SPEED TEST</button>
+    </div>
+
+    <footer>Futuristic Internet Speed Test UI • Demo Simulation</footer>
+  </div>
+
+  <script>
+    // SOUND EFFECTS (WORKS AFTER USER CLICK)
+    const startSound = new Audio();
+    const runningSound = new Audio();
+    const endSound = new Audio();
+
+    startSound.src = "https://cdn.pixabay.com/download/audio/2022/03/15/audio_9f8b9d1c6b.mp3"; // power on
+    runningSound.src = "https://cdn.pixabay.com/download/audio/2022/10/03/audio_8f9a6c2d6f.mp3"; // scanning loop
+    endSound.src = "https://cdn.pixabay.com/download/audio/2022/03/10/audio_7a7b0c4a36.mp3"; // complete
+
+    startSound.preload = runningSound.preload = endSound.preload = 'auto';
+    runningSound.loop = true;
+
+    function toggleTheme() {
+      document.body.classList.toggle('light');
+    }
+
+    function startTest() {
+      // REQUIRED: sound must start after user interaction
+      startSound.volume = 0.9;
+      runningSound.volume = 0.4;
+      endSound.volume = 0.9;
+
+      startSound.currentTime = 0;
+      startSound.play().catch(()=>{});
+      runningSound.currentTime = 0;
+      runningSound.play().catch(()=>{});
+      let speed = 0;
+      const max = Math.floor(Math.random() * 200) + 50; // simulated speed
+      const needle = document.getElementById('needle');
+      const speedEl = document.getElementById('speed');
+
+      const interval = setInterval(() => {
+        speed += 3;
+        if (speed >= max) {
+          speed = max;
+          clearInterval(interval);
+          runningSound.pause();
+          endSound.currentTime = 0;
+          endSound.play();
+          document.getElementById('down').innerText = max + ' Mbps';
+          document.getElementById('up').innerText = Math.floor(max * 0.4) + ' Mbps';
+          document.getElementById('ping').innerText = Math.floor(Math.random()*20+5) + ' ms';
+          document.getElementById('jitter').innerText = Math.floor(Math.random()*5+1) + ' ms';
+        }
+        speedEl.innerText = speed;
+        const angle = -130 + (speed / 300) * 260;
+        needle.style.transform = `translate(-50%, -100%) rotate(${angle}deg)`;
+      }, 30);
+    }
+  </script>
+</body>
+</html>
